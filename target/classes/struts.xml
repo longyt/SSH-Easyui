@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+    
+    
+    <struts>
+    	<constant name="struts.enable.DynamicMethodInvocation" value="false" /> 
+    	<package  name="Mypack"  extends="struts-default">
+    		<action  name="studentquery" class="StudentActionBean" method="query"></action>
+    		<action  name="studentadd" class="StudentActionBean" method="add"><result>/Student.html</result></action>
+    		<action  name="studentdelete" class="StudentActionBean" method="delete"><result>/Student.html</result></action>
+    		<action  name="studentupdate" class="StudentActionBean" method="update"><result>/Student.html</result></action>
+    	</package>
+    </struts>
+    

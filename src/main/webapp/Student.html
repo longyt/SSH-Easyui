@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student HTML</title>
+	 <link rel="stylesheet" href="plugs/easyui/themes/default/easyui.css" />
+	 <link rel="stylesheet" href="plugs/easyui/themes/icon.css" />
+	 
+	 <script type="text/javascript" src="plugs/jquery/jquery.js" ></script>
+	 <script type="text/javascript" src="plugs/easyui/js/jquery.easyui.min.js" ></script>
+	 
+	 <script type="text/javascript">
+	 	$(function(){
+	 		var getCurrentPageRowIndex;//得到当前页面所有行
+	 		var onClickRowData;//单击一行时获得数据
+	 		var onClickRowIndex;//获取单击一行的index
+	 		var data;
+	 		$("#table").datagrid({
+	 			url:"/studentquery.action",
+	 			singleSelect:true,
+	 			toolbar:"#toolbar",
+	 			onDblClickRow:DBEditRow,
+	 			onClickRow:onClick,
+	 			pageList:[5,10,15,20],
+				pageSize:5,
+				pagination:true,
+	 			columns:[[
+	 				{field:"sid",title:"sid",align:"center",width:120},
+	 				{field:"sname",title:"sname",align:"center",width:120,editor:"textbox"},
+	 				{field:"sex",title:"sex",align:"center",width:120,editor:"textbox"},
+	 				{field:"age",title:"age",align:"center",width:120,editor:"textbox"}
+	 			]],
+	 		})
+	 		
+	 	})
+	
+	 	function onClick(index,row){
+	 		onClickRowData=row;
+	 		onClickRowIndex=index;
+	 	}
+	 	function DBEditRow(index,row){
+	 		$("#table").datagrid('beginEdit',index)
+	 		getCurrentPageRowIndex=index;
+			data="upadte";	 		
+			
+	 	}
+	 	function InsertRow(){
+	 		getCurrentPageRowIndex = $("#table").datagrid('getRows').length;
+	 		var getData=$("#table").datagrid('getData');
+	 		var rows={sid:getData.total+1,sname:"",sex:"",age:""}
+	 		$("#table").datagrid('insertRow',{index:getCurrentPageRowIndex,row:rows});
+	 		$("#table").datagrid('beginEdit',getCurrentPageRowIndex)
+	 		data="insert";
+	 		
+	 	}
+	 	function Save(){
+	 		$("#table").datagrid('endEdit',getCurrentPageRowIndex)
+	 		var changes = $("#table").datagrid('getChanges');
+	 		if(data=="insert"){
+		 		console.log(changes[changes.length-1]);
+		 		$.ajax({
+		 			url:"/studentadd.action",
+		 			method:"get",
+		 			dateType:"json",
+		 			data:changes[changes.length-1]
+		 		})
+		 		 			
+	 		}else if(data=="upadte"){
+	 			//console.log(JSON.stringify(changes[changes.length-1]));
+	 			 $.ajax({
+	 				url:"/studentupdate.action",
+	 				method:"get",
+	 				dateType:"json",
+	 				data:changes[changes.length-1]
+	 			}) 
+	 		}
+	 	}
+	 	
+	 	function DeleteRow(){
+	 		$.ajax({
+	 			url:"/studentdelete.action",
+	 			method:"get",
+	 			dataType:"json",
+	 			data:onClickRowData
+	 		})
+	 		$("#table").datagrid('deleteRow',onClickRowIndex);
+	 	}
+	 	
+	 </script>
+</head>
+<body class="easyui-layout">
+    <div data-options="region:'center',title:''" style="padding:5px;background:#eee;">
+    	<div id="table"></div>
+    </div>
+    
+    <div id="toolbar">
+    	<a id="add" href="javascript:InsertRow()" class="easyui-linkbutton" data-options="iconCls:'icon-add'">add</a>
+    	<a id="add" href="javascript:DeleteRow(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'">Remove</a>
+    	<a id="add" href="javascript:Save()" class="easyui-linkbutton" data-options="iconCls:'icon-save'">save</a>
+    	<a id="add" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-cut'">Cut</a>
+    </div>
+</body>
+</html>
